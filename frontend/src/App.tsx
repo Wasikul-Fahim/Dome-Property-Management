@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react'
 import Login from './pages/Login'
+import Register from './pages/Register'
+import Properties from './pages/Properties'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [showRegister, setShowRegister] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -10,24 +13,31 @@ function App() {
   }, [])
 
   if (!isLoggedIn) {
-    return <Login onLogin={() => setIsLoggedIn(true)} />
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
+        {showRegister
+          ? <Register onRegistered={() => setShowRegister(false)} />
+          : <Login onLogin={() => setIsLoggedIn(true)} />}
+        <button
+          className="text-sm text-blue-600"
+          onClick={() => setShowRegister(!showRegister)}
+        >
+          {showRegister ? 'Already have an account? Log in' : "No account? Register"}
+        </button>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-xl font-medium">Property Manager</h1>
-        <button
-          className="text-sm text-gray-500"
-          onClick={() => {
-            localStorage.removeItem('token')
-            setIsLoggedIn(false)
-          }}
-        >
+        <button className="text-sm text-gray-500"
+          onClick={() => { localStorage.removeItem('token'); setIsLoggedIn(false) }}>
           Log out
         </button>
       </div>
-      <p className="text-gray-600">You're logged in. Properties list goes here next.</p>
+      <Properties />
     </div>
   )
 }
