@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import engine
 from app import models
-from app.routers import users, properties, bills, meters
+from app.routers import users, properties, bills, tenants, leases, rent_payments
 
 models.Base.metadata.create_all(bind=engine)  # creates tables
 
@@ -19,7 +19,10 @@ app.add_middleware(
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(properties.router, prefix="/api/properties", tags=["properties"])
 app.include_router(bills.router, prefix="/api/bills", tags=["bills"])
-app.include_router(meters.router, prefix="/api/meters", tags=["meters"])
+app.include_router(tenants.router, prefix="/api/tenants", tags=["tenants"])
+app.include_router(leases.router, prefix="/api/leases", tags=["leases"])
+app.include_router(rent_payments.router, prefix="/api/rent-payments", tags=["rent-payments"])
+
 
 @app.get("/")
 def root():

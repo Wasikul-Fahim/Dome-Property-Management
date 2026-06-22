@@ -5,6 +5,7 @@ export interface Property {
   name: string
   address: string
   property_type: string
+  meter_number: string | null
   owner_id: number
 }
 
@@ -12,6 +13,7 @@ export interface PropertyInput {
   name: string
   address: string
   property_type: string
+  meter_number?: string
 }
 
 export const getProperties = async (): Promise<Property[]> => {

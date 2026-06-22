@@ -10,6 +10,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
     mutationFn: () => api.post('/users/login', { email, password }),
     onSuccess: (res) => {
       localStorage.setItem('token', res.data.access_token)
+      localStorage.setItem('username', res.data.name)
       onLogin()
     },
   })
