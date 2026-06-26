@@ -26,6 +26,11 @@ export const createProperty = async (data: PropertyInput): Promise<Property> => 
   return res.data
 }
 
+export const updateProperty = async (id: number, data: PropertyInput): Promise<Property> => {
+  const res = await api.put(`/properties/${id}`, data)
+  return res.data
+}
+
 export const deleteProperty = async (id: number): Promise<void> => {
   await api.delete(`/properties/${id}`)
 }

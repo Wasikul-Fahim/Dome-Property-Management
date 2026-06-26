@@ -32,11 +32,12 @@ class Bill(Base):
     __tablename__ = "bills"
     id = Column(Integer, primary_key=True, index=True)
     property_id = Column(Integer, ForeignKey("properties.id"))
-    bill_type = Column(String)      # electricity, gas, water, tax
+    bill_type = Column(String)
     amount = Column(Float)
     due_date = Column(Date)
     paid = Column(Boolean, default=False)
     paid_date = Column(Date, nullable=True)
+    reference_number = Column(String, nullable=True)
     notes = Column(String, nullable=True)
     property = relationship("Property", back_populates="bills")
 

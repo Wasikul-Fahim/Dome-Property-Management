@@ -75,3 +75,13 @@ def end_lease(
     lease.end_date = end_date
     db.commit()
     return {"message": "Lease ended"}
+
+
+@router.get("/all", response_model=List[schemas.LeaseWithPropertyResponse])
+def get_all_leases(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    return db.query(models.Lease).join(models.Property).filter(
+        models.Property.owner_id == current_user.id
+    ).order_by(models.Lease.end_date.is_(None).desc(), models.Lease.start_date.desc()).all()

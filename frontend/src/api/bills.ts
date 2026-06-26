@@ -34,15 +34,29 @@ export const createBill = async (data: BillInput): Promise<Bill> => {
   return res.data
 }
 
-export const markBillPaid = async (billId: number, amount: number): Promise<Bill> => {
-  const res = await api.put(`/bills/${billId}`, {
+export const markBillPaid = async (
+  id: number,
+  amount: number,
+  referenceNumber: string | null
+): Promise<Bill> => {
+  const res = await api.put(`/bills/${id}`, {
     paid: true,
     amount,
     paid_date: new Date().toISOString().split('T')[0],
+    reference_number: referenceNumber || null,
   })
   return res.data
 }
 
 export const deleteBill = async (billId: number): Promise<void> => {
   await api.delete(`/bills/${billId}`)
+}
+
+export interface BillWithProperty extends Bill {
+  property: { id: number; name: string }
+}
+
+export const getAllBillsWithProperty = async (): Promise<BillWithProperty[]> => {
+  const res = await api.get('/bills/all')
+  return res.data
 }

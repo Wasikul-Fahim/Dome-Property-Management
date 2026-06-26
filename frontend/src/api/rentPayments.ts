@@ -37,7 +37,3 @@ export const markPaymentPaid = async (
   return res.data
 }
 
-export const syncRentMonths = async (leaseId: number): Promise<RentPayment[]> => {
-  const res = await api.post(`/rent-payments/lease/${leaseId}/sync`)
-  return res.data
-}

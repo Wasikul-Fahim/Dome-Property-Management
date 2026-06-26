@@ -44,16 +44,6 @@ def get_bills_for_property(
         models.Bill.property_id == property_id
     ).order_by(models.Bill.due_date.desc()).all()
 
-@router.get("/all", response_model=List[schemas.BillResponse])
-def get_all_bills(
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    """All bills across all of the user's properties — used for the dashboard."""
-    return db.query(models.Bill).join(models.Property).filter(
-        models.Property.owner_id == current_user.id
-    ).order_by(models.Bill.due_date.asc()).all()
-
 @router.put("/{bill_id}", response_model=schemas.BillResponse)
 def update_bill(
     bill_id: int,
@@ -72,6 +62,7 @@ def update_bill(
     if data.amount is not None:
         bill.amount = data.amount
     bill.paid_date = data.paid_date
+    bill.reference_number = data.reference_number
     bill.notes = data.notes
     db.commit()
     db.refresh(bill)
@@ -92,3 +83,14 @@ def delete_bill(
     db.delete(bill)
     db.commit()
     return {"message": "Bill deleted"}
+
+
+@router.get("/all", response_model=List[schemas.BillWithPropertyResponse])
+def get_all_bills(
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    """All bills across all of the user's properties — used for the dashboard."""
+    return db.query(models.Bill).join(models.Property).filter(
+        models.Property.owner_id == current_user.id
+    ).order_by(models.Bill.due_date.asc()).all()

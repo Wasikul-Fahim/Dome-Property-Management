@@ -1,50 +1,62 @@
 import { useState, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Properties from './pages/Properties'
+import Tenants from './pages/Tenants'
+import Bills from './pages/Bills'
+import Sidebar from './components/Sidebar'
 
-function App() {
+function AuthGate() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [username, setUsername] = useState<string | null>(null)
   const [showRegister, setShowRegister] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem('token')
-    const user = localStorage.getItem('username')
-    if (token) {
-      setIsLoggedIn(true)
-      setUsername(user)
-    }
+    if (token) setIsLoggedIn(true)
   }, [])
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
-        {showRegister
-          ? <Register onRegistered={() => setShowRegister(false)} />
-          : <Login onLogin={() => { setIsLoggedIn(true); setUsername(localStorage.getItem('username')) }} />}
-        <button
-          className="text-sm text-blue-600"
-          onClick={() => setShowRegister(!showRegister)}
-        >
-          {showRegister ? 'Already have an account? Log in' : "No account? Register"}
+      <div className="min-h-screen flex flex-col items-center justify-center bg-brand-90 gap-4">
+        {showRegister ? (
+          <Register onRegistered={() => setShowRegister(false)} />
+        ) : (
+          <Login onLogin={() => setIsLoggedIn(true)} />
+        )}
+        <button className="text-sm text-brand-40" onClick={() => setShowRegister(!showRegister)}>
+          {showRegister ? 'Already have an account? Log in' : 'No account? Register'}
         </button>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-medium">{username ? `Welcome ${username} !` : 'Welcome back!'}</h1>
-        <button className="text-sm text-gray-500"
-          onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('username'); setIsLoggedIn(false); setUsername(null) }}>
-          Log out
-        </button>
+    <BrowserRouter>
+      <div className="flex">
+        <Sidebar />
+        <main className="ml-56 flex-1 min-h-screen bg-brand-90 p-8">
+          <div className="flex justify-end mb-4">
+            <button
+              className="text-sm text-brand-10"
+              onClick={() => {
+                localStorage.removeItem('token')
+                setIsLoggedIn(false)
+              }}
+            >
+              Log out
+            </button>
+          </div>
+          <Routes>
+            <Route path="/properties" element={<Properties />} />
+            <Route path="/tenants" element={<Tenants />} />
+            <Route path="/bills" element={<Bills />} />
+            <Route path="*" element={<Navigate to="/properties" replace />} />
+          </Routes>
+        </main>
       </div>
-      <Properties />
-    </div>
+    </BrowserRouter>
   )
 }
 
-export default App
+export default AuthGate

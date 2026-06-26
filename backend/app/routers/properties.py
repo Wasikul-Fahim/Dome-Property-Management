@@ -18,6 +18,7 @@ def create_property(
         name=data.name,
         address=data.address,
         property_type=data.property_type,
+        meter_number=data.meter_number,
         owner_id=current_user.id
     )
     db.add(new_property)
@@ -64,6 +65,7 @@ def update_property(
     prop.name = data.name
     prop.address = data.address
     prop.property_type = data.property_type
+    prop.meter_number = data.meter_number
     db.commit()
     db.refresh(prop)
     return prop

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { getPaymentsForLease, syncRentMonths, markPaymentPaid } from '../api/rentPayments'
+import { getPaymentsForLease, markPaymentPaid } from '../api/rentPayments'
 
 export default function RentLedger({ leaseId, monthlyRent }: { leaseId: number; monthlyRent: number }) {
   const queryClient = useQueryClient()
@@ -15,7 +15,6 @@ export default function RentLedger({ leaseId, monthlyRent }: { leaseId: number; 
   })
 
   const syncMutation = useMutation({
-    mutationFn: () => syncRentMonths(leaseId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['rentPayments', leaseId] }),
     onError: (err) => console.error('Sync failed:', err),
   })

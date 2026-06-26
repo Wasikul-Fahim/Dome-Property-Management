@@ -13,9 +13,9 @@ export default function Register({ onRegistered }: { onRegistered: () => void })
   })
 
   return (
-    <div className="bg-white p-8 rounded-xl shadow-sm w-full max-w-sm">
+    <div className="bg-brand-80 p-8 rounded-xl shadow-sm w-full max-w-sm">
       <h1 className="text-xl font-medium mb-6">Create account</h1>
-      <input className="w-full border rounded-lg p-3 mb-3 text-sm"
+      <input className="w-full border transparent rounded-lg p-3 mb-3 text-sm"
         placeholder="Name" value={name}
         onChange={e => setName(e.target.value)} />
       <input className="w-full border rounded-lg p-3 mb-3 text-sm"
@@ -25,7 +25,7 @@ export default function Register({ onRegistered }: { onRegistered: () => void })
         type="password" placeholder="Password" value={password}
         onChange={e => setPassword(e.target.value)} />
       <button
-        className="w-full bg-blue-600 text-white rounded-lg p-3 text-sm font-medium"
+        className="w-full bg-brand-50 text-brand-10 rounded-lg p-3 text-sm font-medium"
         onClick={() => registerMutation.mutate()}
         disabled={registerMutation.isPending}>
         {registerMutation.isPending ? 'Creating...' : 'Create account'}

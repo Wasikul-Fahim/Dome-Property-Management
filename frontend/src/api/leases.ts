@@ -31,3 +31,12 @@ export const createLease = async (data: LeaseInput): Promise<Lease> => {
 export const endLease = async (leaseId: number, endDate: string): Promise<void> => {
   await api.post(`/leases/${leaseId}/end?end_date=${endDate}`)
 }
+
+export interface LeaseWithProperty extends Lease {
+  property: { id: number; name: string }
+}
+
+export const getAllLeases = async (): Promise<LeaseWithProperty[]> => {
+  const res = await api.get('/leases/all')
+  return res.data
+}

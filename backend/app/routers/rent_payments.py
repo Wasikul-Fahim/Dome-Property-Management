@@ -11,6 +11,33 @@ from app.auth import get_current_user
 router = APIRouter()
 
 
+def _get_or_create_months(db: Session, lease: models.Lease) -> list[models.RentPayment]:
+    existing = db.query(models.RentPayment).filter(
+        models.RentPayment.lease_id == lease.id
+    ).all()
+    existing_months = {p.month for p in existing}
+
+    end_point = lease.end_date or date.today()
+    cursor = date(lease.start_date.year, lease.start_date.month, 1)
+    end_marker = date(end_point.year, end_point.month, 1)
+
+    created_any = False
+    while cursor <= end_marker:
+        month_str = cursor.strftime("%Y-%m")
+        if month_str not in existing_months:
+            db.add(models.RentPayment(lease_id=lease.id, month=month_str))
+            existing_months.add(month_str)
+            created_any = True
+        cursor += relativedelta(months=1)
+
+    if created_any:
+        db.commit()
+
+    return db.query(models.RentPayment).filter(
+        models.RentPayment.lease_id == lease.id
+    ).order_by(models.RentPayment.month.desc()).all()
+
+
 @router.get("/lease/{lease_id}", response_model=List[schemas.RentPaymentResponse])
 def get_payments_for_lease(
     lease_id: int,
@@ -24,9 +51,7 @@ def get_payments_for_lease(
     if not lease:
         raise HTTPException(status_code=404, detail="Lease not found")
 
-    return db.query(models.RentPayment).filter(
-        models.RentPayment.lease_id == lease_id
-    ).order_by(models.RentPayment.month.desc()).all()
+    return _get_or_create_months(db, lease)
 
 
 @router.post("/", response_model=schemas.RentPaymentResponse)
@@ -54,42 +79,6 @@ def create_rent_record(
     db.commit()
     db.refresh(payment)
     return payment
-
-
-@router.post("/lease/{lease_id}/sync", response_model=List[schemas.RentPaymentResponse])
-def sync_rent_months(
-    lease_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user)
-):
-    lease = db.query(models.Lease).join(models.Property).filter(
-        models.Lease.id == lease_id,
-        models.Property.owner_id == current_user.id
-    ).first()
-    if not lease:
-        raise HTTPException(status_code=404, detail="Lease not found")
-
-    existing_months = {
-        p.month for p in db.query(models.RentPayment).filter(
-            models.RentPayment.lease_id == lease_id
-        ).all()
-    }
-
-    end_point = lease.end_date or date.today()
-    cursor = date(lease.start_date.year, lease.start_date.month, 1)
-    end_marker = date(end_point.year, end_point.month, 1)
-
-    while cursor <= end_marker:
-        month_str = cursor.strftime("%Y-%m")
-        if month_str not in existing_months:
-            db.add(models.RentPayment(lease_id=lease_id, month=month_str))
-        cursor += relativedelta(months=1)
-
-    db.commit()
-
-    return db.query(models.RentPayment).filter(
-        models.RentPayment.lease_id == lease_id
-    ).order_by(models.RentPayment.month.desc()).all()
 
 
 @router.put("/{payment_id}", response_model=schemas.RentPaymentResponse)

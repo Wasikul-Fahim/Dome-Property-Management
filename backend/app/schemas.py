@@ -54,6 +54,26 @@ class LeaseResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class PropertyBasic(BaseModel):
+    id: int
+    name: str
+
+    class Config:
+        from_attributes = True
+
+class LeaseWithPropertyResponse(BaseModel):
+    id: int
+    property_id: int
+    tenant_id: int
+    start_date: date
+    end_date: Optional[date]
+    monthly_rent: float
+    tenant: TenantResponse
+    property: PropertyBasic
+
+    class Config:
+        from_attributes = True
+
 
 
 class RentPaymentCreate(BaseModel):
@@ -91,6 +111,7 @@ class BillUpdate(BaseModel):
     amount: Optional[float] = None
     paid: bool
     paid_date: Optional[date] = None
+    reference_number: Optional[str] = None
     notes: Optional[str] = None
 
 class BillResponse(BaseModel):
@@ -101,7 +122,23 @@ class BillResponse(BaseModel):
     due_date: date
     paid: bool
     paid_date: Optional[date]
+    reference_number: Optional[str]
     notes: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class BillWithPropertyResponse(BaseModel):
+    id: int
+    property_id: int
+    bill_type: str
+    amount: float
+    due_date: date
+    paid: bool
+    paid_date: Optional[date]
+    reference_number: Optional[str]
+    notes: Optional[str]
+    property: PropertyBasic
 
     class Config:
         from_attributes = True
