@@ -2,6 +2,7 @@
 
 @theme {
     /* Brand Color Shades */
+    --color-brand-0: #000000;
     --color-brand-10: #0b2a4d;
     --color-brand-20: #155a8a;
     --color-brand-30: #1f88c5;
@@ -11,12 +12,13 @@
     --color-brand-70: #8ee1e8;
     --color-brand-80: #cfeaf0;
     --color-brand-90: #edf7fa;
+    --color-brand-100: #ffffff;
 
     /* Brand Sidebar Colors */
-    --color-brand-sidebar-primary: #4db6d9;
-    --color-brand-sidebar-bg: #e0f7fa;
-    --color-brand-sidebar-txt: #0b2a4d;
-    --color-brand-sidebar-secondary: #8ee1e8;
+    --color-brand-primary: #009BD1;
+    --color-brand-bg: #1a1a1a;
+    --color-brand-txt: #E3F3FF;
+    --color-brand-secondary: #BBD5DA;
 
     /* Primary Colors */
     --color-primary: #4db6d9;

@@ -10,7 +10,7 @@ import {
 } from '../api/properties'
 import PropertyLeases from '../components/PropertyLeases'
 import BillsPanel from '../components/BillsPanel'
-import DropdownMenu from '../components/DropDownMenu'
+import DropdownMenu from '../components/DropdownMenu'
 import ConfirmDialog from '../components/ConfirmDialog'
 
 const emptyForm: PropertyInput = {
@@ -79,9 +79,9 @@ export default function Properties() {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-medium">Your properties</h2>
+        <h2 className="text-3xl text-brand-80 font-medium">Your properties</h2>
         <button
-          className="bg-brand-50 text-brand-10 text-sm px-4 py-2 rounded-lg"
+          className="bg-brand-50 text-brand-10 text-md px-4 py-2 rounded-lg"
           onClick={() => (showForm ? resetForm() : setShowForm(true))}
         >
           {showForm ? 'Cancel' : '+ Add property'}
@@ -89,21 +89,21 @@ export default function Properties() {
       </div>
 
       {showForm && (
-        <div className="bg-brand-80 border rounded-xl p-4 mb-4">
+        <div className="bg-brand-bg border rounded-xl p-4 mb-4">
           <input
-            className="w-full border rounded-lg p-2 mb-2 text-sm"
+            className="w-full border text-brand-secondary rounded-lg p-2 mb-2 text-sm"
             placeholder="Property name (e.g. Dhanmondi Flat 3B)"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <input
-            className="w-full border rounded-lg p-2 mb-2 text-sm"
+            className="w-full border text-brand-secondary rounded-lg p-2 mb-2 text-sm"
             placeholder="Address"
             value={form.address}
             onChange={(e) => setForm({ ...form, address: e.target.value })}
           />
           <select
-            className="w-full border rounded-lg p-2 mb-2 text-sm"
+            className="w-full border text-brand-secondary rounded-lg p-2 mb-2 text-sm"
             value={form.property_type}
             onChange={(e) => setForm({ ...form, property_type: e.target.value })}
           >
@@ -113,7 +113,7 @@ export default function Properties() {
             <option value="other">Other</option>
           </select>
           <input
-            className="w-full border rounded-lg p-2 mb-3 text-sm"
+            className="w-full border text-brand-secondary rounded-lg p-2 mb-3 text-sm"
             placeholder="Electric meter number (optional)"
             value={form.meter_number}
             onChange={(e) => setForm({ ...form, meter_number: e.target.value })}
@@ -142,18 +142,18 @@ export default function Properties() {
         <p className="text-gray-500 text-sm">No properties yet. Add your first one above.</p>
       )}
 
-      <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-3.5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {properties?.map((property) => (
-          <div key={property.id} className="bg-white border rounded-xl p-4">
+          <div key={property.id} className="bg-brand-bg border rounded-xl p-4">
             <div className="flex justify-between items-start">
               <div>
-                <p className="font-medium text-sm">{property.name}</p>
-                <p className="text-gray-500 text-sm">{property.address}</p>
-                <span className="inline-block mt-1 text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-600">
+                <p className="text-brand-txt font-bold text-lg">{property.name}</p>
+                <p className="text-gray-300 text-sm">{property.address}</p>
+                <span className="inline-block mt-1 text-xs bg-brand-secondary px-2 py-0.5 rounded-full text-gray-600">
                   {property.property_type}
                 </span>
                 {property.meter_number && (
-                  <span className="inline-block mt-1 ml-1 text-xs bg-yellow-50 px-2 py-0.5 rounded-full text-yellow-700">
+                  <span className="inline-block mt-1 ml-1 text-xs bg-yellow-700 px-2 py-0.5 rounded-full text-yellow-50">
                     Meter: {property.meter_number}
                   </span>
                 )}

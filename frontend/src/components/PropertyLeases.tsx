@@ -4,6 +4,36 @@ import { getLeasesForProperty, createLease } from '../api/leases'
 import { getTenants, createTenant } from '../api/tenants'
 import RentLedger from './RentLedger'
 
+function CopyableText({ text }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  return (
+    <span onClick={handleCopy} style={{ cursor: 'pointer' }}>
+      {text} {copied && <small>(Copied!)</small>}
+    </span>
+  );
+}
+
+  const formatMonthDisplay = (monthStr: string) => {
+    if (!monthStr) return '';
+    const [year, month] = monthStr.split('-');
+    const date = new Date(Number(year), Number(month) - 1);
+    const monthName = date.toLocaleString('en-US', { month: 'long' });
+    const shortYear = year.slice(-2);
+    return `${monthName}, ${shortYear}`;
+  };
+
+
 export default function PropertyLeases({ propertyId }: { propertyId: number }) {
   const queryClient = useQueryClient()
   const [showNewLeaseForm, setShowNewLeaseForm] = useState(false)
@@ -54,25 +84,66 @@ export default function PropertyLeases({ propertyId }: { propertyId: number }) {
   return (
     <div className="mt-3 border-t pt-3">
       {currentLease ? (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-          <p className="text-xs text-green-700 font-medium mb-1 text-center">Current tenant</p>
-          <p className="text-md font-medium">{currentLease.tenant.full_name}</p>
-          <p className="text-sm text-gray-600">{currentLease.tenant.phone}</p>
-          <p className="text-xs text-gray-400">{currentLease.tenant.nid_number}</p> <br />
-          <p className="text-sm text-gray-500 mt-1">
-            Rent: {currentLease.monthly_rent} / month · Since {currentLease.start_date}
+        <div className="bg-brand-0 border border-brand-30 rounded-lg p-4">
+          <div className="flex justify-between items-center mb-4">
+            {/* Column 1: Name (Vertically centered by the parent, left-aligned) */}
+            <div>
+              <p className="text-lg font-bold text-brand-txt ml-1">{currentLease.tenant.full_name}</p>
+            </div>
+
+            {/* Column 2: Contact Details (Stacked in 2 rows, right-aligned) */}
+            <div className="flex flex-col items-end gap-1.5">
+              {/* Row 1: Phone */}
+              <div className="flex items-center gap-1.5 text-sm text-brand-txt">
+                <svg className="w-4 h-4 text-brand-txt" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <g fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5">
+                    <rect width="12.5" height="18.5" x="5.75" y="2.75" rx="3"/>
+                    <path d="M11 17.75h2"/>
+                  </g>
+                </svg>
+                <span>
+                  <CopyableText text={currentLease.tenant.phone} />
+                </span>
+              </div>
+
+              {/* Row 2: NID */}
+              <div className="flex items-center gap-1.5 text-xs text-brand-txt">
+                <svg className="w-4 h-4 text-brand-txt" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path fill="currentColor" d="M18 3a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V7q0-.053.005-.102A3.994 3.994 0 0 1 6 3zm-1 12H7a1 1 0 0 0 0 2h10a1 1 0 0 0 0-2M9 7a2.995 2.995 0 0 0-2.995 2.898A1 1 0 0 0 6 10a3 3 0 1 0 3-3m8 4h-2a1 1 0 0 0 0 2h2a1 1 0 0 0 0-2m0-4h-2a1 1 0 0 0 0 2h2a1 1 0 0 0 0-2"/>
+                </svg>
+                <span>
+                  <CopyableText text={currentLease.tenant.nid_number} />
+                </span>
+              </div>
+            </div>
+            
+          </div>
+          {/* Row 3: Lease Details */}
+          <p className="text-sm text-gray-500 mb-4">
+            Rent: <span className="font-semibold text-brand-primary">{currentLease.monthly_rent}</span> / month · Since <span className="font-semibold text-brand-secondary">{formatMonthDisplay(currentLease.start_date)}</span>
           </p>
-        <RentLedger leaseId={currentLease.id} monthlyRent={currentLease.monthly_rent} />
+          {/* Rent Ledger Component */}
+          <RentLedger leaseId={currentLease.id} monthlyRent={currentLease.monthly_rent} />
         </div>
       ) : (
         <p className="text-sm text-gray-500">No current tenant</p>
       )}
 
+
       <button
-        className="text-xs text-blue-600 mt-2"
+        className="mt-2 text-xs font-medium bg-brand-secondary text-blue-900 border border-gray-200 hover:bg-blue-50 hover:border-blue-200 px-2.5 py-1.5 rounded-lg flex items-center justify-center gap-1.5 transition w-full"
         onClick={() => setShowNewLeaseForm(!showNewLeaseForm)}
       >
-        {showNewLeaseForm ? 'Cancel' : currentLease ? '+ Replace tenant' : '+ Add tenant'}
+        {showNewLeaseForm ? (
+          'Cancel'
+        ) : (
+          <>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            {currentLease ? 'Replace tenant' : 'Add tenant'}
+          </>
+        )}
       </button>
 
       {showNewLeaseForm && (
@@ -163,7 +234,7 @@ export default function PropertyLeases({ propertyId }: { propertyId: number }) {
 
       {pastLeases.length > 0 && (
         <details className="mt-3">
-          <summary className="text-xs text-gray-500 cursor-pointer">
+          <summary className="text-xs text-brand-30 cursor-pointer">
             Past tenants ({pastLeases.length})
           </summary>
           <div className="mt-2 space-y-2">
